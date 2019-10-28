@@ -1,0 +1,19 @@
+Package: aqmdata
+Type: Package
+Title: ASRC Air Quality Raw Data Collection
+Version: 0.1.0
+Authors@R: c(
+    person("William", "May", email = "wcmay@albany.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3201-1885")),
+    person("SUNY RF", role = "cph"))
+Description: An R package providing tools to collect and organize air
+    quality data files from Envidas, Campbell dataloggers, the NYS
+    Mesonet, and other NYS sources.
+License: MIT + file LICENSE
+URL: https://github.com/ASRCsoft/aqmdata
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 3.4.4),
+    etl,
+    ssh
+RoxygenNote: 6.1.1
