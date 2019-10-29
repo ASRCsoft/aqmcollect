@@ -3,3 +3,4 @@
 export(download_mesonet)
 export(get_envidas)
 export(update_campbell)
+export(update_envidas)

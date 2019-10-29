@@ -1,5 +1,10 @@
 ## functions to update the raw data repository
 
+## format units in column names
+add_units = function(name, units) {
+  paste0(name, ifelse(is.na(units), '', paste0(' (', units, ')')))
+}
+
 #' @export
 get_envidas = function(con, site, minutes, start, end) {
   ## get the processed data
@@ -8,8 +13,9 @@ get_envidas = function(con, site, minutes, start, end) {
             FROM ?tbl
            where Date_Time>=?start
              and Date_Time<?end"
-  sql = DBI::sqlInterpolate(con, sql0, tbl = tbl_name, start = start,
-                            end = end)
+  sql = DBI::sqlInterpolate(con, sql0, tbl = tbl_name,
+                            start = as.character(start),
+                            end = as.character(end))
   res = DBI::dbGetQuery(con, sql)
   ## get channel info
   channels = DBI::dbGetQuery(con, 'select number, name, units from Channel')
@@ -31,6 +37,36 @@ get_envidas = function(con, site, minutes, start, end) {
   names(res)[is_status] =
     channels$status_name[match(col_channels[is_status], channels$number)]
   res
+}
+
+#' @export
+update_envidas = function(outdir, con, site, minutes, start_date,
+                          end_date = Sys.Date()) {
+  ## requested files
+  dates = seq(start_date, end_date - 1, by = 'day')
+  date_strs = format(dates, '%Y%m%d')
+  req_file_names = paste(date_strs, 'envidas.csv', sep = '_')
+  req_files = file.path(outdir, format(dates, '%Y'), req_file_names)
+  ## existing files
+  file_glob = file.path(outdir, '*', '*')
+  cur_files = Sys.glob(file_glob)
+  ## download files
+  is_new = !req_file_names %in% basename(cur_files)
+  new_dates = dates[is_new]
+  new_files = req_files[is_new]
+  out_folders = unique(dirname(new_files))
+  if (any(is_new)) {
+    for (f in out_folders) {
+      dir.create(f, showWarnings = FALSE, recursive = TRUE)
+    }
+    for (n in 1:sum(is_new)) {
+      d = dates[n]
+      out_file = new_files[n]
+      message('Downloading ', out_file)
+      df_n = get_envidas(con, site, minutes, d, d + 1)
+      write.csv(df_n, file = out_file, row.names = F)
+    }
+  }
 }
 
 #' @export
