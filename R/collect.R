@@ -1,6 +1,39 @@
 ## functions to update the raw data repository
 
 #' @export
+get_envidas = function(con, site, minutes, start, end) {
+  ## get the processed data
+  tbl_name = DBI::SQL(sprintf("S%03dT%02d", site, minutes))
+  sql0 = "SELECT *
+            FROM ?tbl
+           where Date_Time>=?start
+             and Date_Time<?end"
+  sql = DBI::sqlInterpolate(con, sql0, tbl = tbl_name, start = start,
+                            end = end)
+  res = DBI::dbGetQuery(con, sql)
+  ## get channel info
+  channels = DBI::dbGetQuery(con, 'select number, name, units from Channel')
+  channels$value_name = add_units(channels$name, channels$units)
+  channels$status_name = add_units(channels$name, 'status')
+  col_names = names(res)
+  col_channels = as.integer(sub('^Value|^Status', '', col_names))
+  ## remove unlabeled channels
+  labeled = col_channels %in% channels$number
+  keep_col = col_names == 'Date_Time' | labeled
+  res = res[, keep_col]
+  col_channels = col_channels[keep_col]
+  ## rename columns
+  col_names = names(res)
+  is_value = grep('^Value', col_names)
+  is_status = grep('^Status', col_names)
+  names(res)[is_value] =
+    channels$value_name[match(col_channels[is_value], channels$number)]
+  names(res)[is_status] =
+    channels$status_name[match(col_channels[is_status], channels$number)]
+  res
+}
+
+#' @export
 download_mesonet = function(obj, mesonet_api_url, d) {
   d = as.Date(d)
   date_str = format(d, '%Y%m%d')
@@ -42,7 +75,7 @@ update_campbell = function(obj, site, sshcon, remote_path) {
     }
     for (n in 1:length(new_remote_paths)) {
       ssh::scp_download(sshcon, new_remote_paths[n], to = new_local_paths[n])
-    }
+   }
   }
 }
 
