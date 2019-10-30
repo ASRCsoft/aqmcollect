@@ -16,5 +16,6 @@ Depends:
     R (>= 3.4.4),
     DBI,
     etl,
+    memoise,
     ssh
 RoxygenNote: 6.1.1

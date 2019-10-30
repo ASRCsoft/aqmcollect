@@ -5,6 +5,20 @@ add_units = function(name, units) {
   paste0(name, ifelse(is.na(units), '', paste0(' (', units, ')')))
 }
 
+get_envidas_channels_nocache = function(con) {
+  DBI::dbGetQuery(con, 'select number, name, units from Channel')
+}
+
+get_envidas_channels_cache = memoise::memoise(get_envidas_channels_nocache)
+
+get_envidas_channels = function(con, use_cache = T) {
+  if (use_cache) {
+    get_envidas_channels_cache(con)
+  } else {
+    get_envidas_channels_nocache(con)
+  }
+}
+
 #' @export
 get_envidas = function(con, site, minutes, start, end) {
   ## get the processed data
@@ -18,7 +32,7 @@ get_envidas = function(con, site, minutes, start, end) {
                             end = as.character(end))
   res = DBI::dbGetQuery(con, sql)
   ## get channel info
-  channels = DBI::dbGetQuery(con, 'select number, name, units from Channel')
+  channels = get_envidas_channels(con)
   channels$value_name = add_units(channels$name, channels$units)
   channels$status_name = add_units(channels$name, 'status')
   col_names = names(res)
