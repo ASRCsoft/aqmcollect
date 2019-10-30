@@ -1,7 +1,7 @@
 ## functions to update the raw data repository
 
 ## format units in column names
-add_units = function(name, units) {
+format_header = function(name, units) {
   paste0(name, ifelse(is.na(units), '', paste0(' (', units, ')')))
 }
 
@@ -33,8 +33,8 @@ get_envidas = function(con, site, minutes, start, end) {
   res = DBI::dbGetQuery(con, sql)
   ## get channel info
   channels = get_envidas_channels(con)
-  channels$value_name = add_units(channels$name, channels$units)
-  channels$status_name = add_units(channels$name, 'status')
+  channels$value_name = format_header(channels$name, channels$units)
+  channels$status_name = format_header(channels$name, 'status')
   col_names = names(res)
   col_channels = as.integer(sub('^Value|^Status', '', col_names))
   ## remove unlabeled channels
