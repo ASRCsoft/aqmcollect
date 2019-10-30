@@ -84,11 +84,11 @@ update_envidas = function(outdir, con, site, minutes, start_date,
 }
 
 #' @export
-download_mesonet = function(outdir, mesonet_api_url, d) {
-  d = as.Date(d)
+update_nysmesonet = function(outdir, nysm_api, nysm_site, start_date,
+                             end_date = Sys.Date()) {
+  d = seq(start_date, end_date - 1, 'day')
   date_str = format(d, '%Y%m%d')
-  mes_url = paste0(mesonet_api_url, '/WFMB/',
-                   date_str, 'T0000/',
+  mes_url = paste0(nysm_api, '/', nysm_site, '/', date_str, 'T0000/',
                    date_str, 'T2355')
   file_name = paste(date_str, 'mesonet.csv', sep = '_')
   out_folder = format(d, '%Y')
