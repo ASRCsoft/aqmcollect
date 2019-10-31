@@ -26,7 +26,8 @@ get_envidas = function(con, site, minutes, start, end) {
   sql0 = "SELECT *
             FROM ?tbl
            where Date_Time>=?start
-             and Date_Time<?end"
+             and Date_Time<?end
+           order by Date_Time asc"
   sql = DBI::sqlInterpolate(con, sql0, tbl = tbl_name,
                             start = as.character(start),
                             end = as.character(end))
