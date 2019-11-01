@@ -37,7 +37,8 @@ get_envidas = function(con, site, minutes, start, end) {
   channels$value_name = format_header(channels$name, channels$units)
   channels$status_name = format_header(channels$name, 'status')
   col_names = names(res)
-  col_channels = as.integer(sub('^Value|^Status', '', col_names))
+  col_channels =
+    suppressWarnings(as.integer(sub('^Value|^Status', '', col_names)))
   ## remove unlabeled channels
   labeled = col_channels %in% channels$number
   keep_col = col_names == 'Date_Time' | labeled
