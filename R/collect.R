@@ -131,17 +131,3 @@ update_campbell = function(outdir, sshcon, remote_path) {
    }
   }
 }
-
-## update_raw_data = function(obj, mesonet_api_url, campbell_ssh) {
-##   ## get NYS Mesonet data from the first recorded data to yesterday
-##   tnow = Sys.time()
-##   attributes(tnow)$tzone = 'UTC'
-##   dnow = as.Date(tnow) - 1
-##   d = seq(as.Date('2016-01-29'), dnow, 'day')
-##   message('Downloading NYS Mesonet files...')
-##   download_mesonet(obj, mesonet_api_url, d)
-##   message('Downloading WFMS Campbell files...')
-##   update_campbell(obj, 'WFMS', campbell_ssh, '/RA1/loggernet/summit')
-##   message('Downloading WFML Campbell files...')
-##   update_campbell(obj, 'WFML', campbell_ssh, '/RA1/loggernet/lodge')
-## }
