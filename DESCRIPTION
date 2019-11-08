@@ -1,4 +1,4 @@
-Package: aqmdata
+Package: aqmcollect
 Type: Package
 Title: ASRC Air Quality Raw Data Collection
 Version: 0.1.0
