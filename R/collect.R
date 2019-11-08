@@ -19,10 +19,23 @@ get_envidas_channels = function(con, use_cache = T) {
   }
 }
 
+#' Get data from Envidas.
+#'
+#' Retrieve a \code{data.frame} of Envidas data via Microsoft SQL
+#' Server.
+#' 
+#' @param con A \code{DBIConnection} object for Envidas' SQL Server
+#'   database.
+#' @param site The site ID number.
+#' @param agg_min The aggregation interval in minutes.
+#' @param start The lower time bound (inclusive).
+#' @param end The upper time bound (exclusive).
+#' @return A \code{data.frame} of aggregated data for the available
+#'   channels.
 #' @export
-get_envidas = function(con, site, minutes, start, end) {
+get_envidas = function(con, site, agg_min, start, end) {
   ## get the processed data
-  tbl_name = DBI::SQL(sprintf("S%03dT%02d", site, minutes))
+  tbl_name = DBI::SQL(sprintf("S%03dT%02d", site, agg_min))
   sql0 = "SELECT *
             FROM ?tbl
            where Date_Time>=?start
