@@ -89,7 +89,7 @@ update_envidas = function(outdir, con, site, minutes, start_date,
       dir.create(f, showWarnings = FALSE, recursive = TRUE)
     }
     for (n in 1:sum(is_new)) {
-      d = dates[n]
+      d = new_dates[n]
       out_file = new_files[n]
       message('Downloading ', out_file)
       df_n = get_envidas(con, site, minutes, d, d + 1)
