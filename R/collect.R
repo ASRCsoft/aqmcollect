@@ -6,7 +6,7 @@ format_header = function(name, units) {
 }
 
 get_envidas_channels_nocache = function(con) {
-  DBI::dbGetQuery(con, 'select number, name, units from Channel')
+  DBI::dbGetQuery(con, 'select saveCol, name, units from Channel')
 }
 
 get_envidas_channels_cache = memoise::memoise(get_envidas_channels_nocache)
@@ -53,7 +53,7 @@ get_envidas = function(con, site, agg_min, start, end) {
   col_channels =
     suppressWarnings(as.integer(sub('^Value|^Status', '', col_names)))
   ## remove unlabeled channels
-  labeled = col_channels %in% channels$number
+  labeled = col_channels %in% channels$saveCol
   keep_col = col_names == 'Date_Time' | labeled
   res = res[, keep_col]
   col_channels = col_channels[keep_col]
@@ -62,9 +62,9 @@ get_envidas = function(con, site, agg_min, start, end) {
   is_value = grep('^Value', col_names)
   is_status = grep('^Status', col_names)
   names(res)[is_value] =
-    channels$value_name[match(col_channels[is_value], channels$number)]
+    channels$value_name[match(col_channels[is_value], channels$saveCol)]
   names(res)[is_status] =
-    channels$status_name[match(col_channels[is_status], channels$number)]
+    channels$status_name[match(col_channels[is_status], channels$saveCol)]
   res
 }
 
